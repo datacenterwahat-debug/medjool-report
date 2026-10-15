@@ -1098,15 +1098,29 @@
     </div>
 
     <div class="admin-only" style="margin-top:18px;">
-      <div class="admin-bar" style="margin-top:0;">
-        <button class="btn btn-upload" type="button" onclick="document.getElementById('fileInput').click()">📤 Upload
-          Excel</button>
-        <button class="btn btn-save pulse" id="saveBtn" type="button" onclick="downloadUpdatedReport()">🚀 Publish
-          data.json</button>
-        <button class="btn" type="button" style="background:#0f766e;color:#fff" onclick="downloadFullHtml()">💾 Download
-          full HTML</button>
+      <div class="admin-bar" style="margin-top:0;flex-direction:column;align-items:stretch;gap:12px;">
+        <div style="display:flex;flex-wrap:wrap;gap:10px;justify-content:center;align-items:center;">
+          <button class="btn btn-upload" type="button" onclick="document.getElementById('fileInput').click()">📤 Upload Excel</button>
+          <button class="btn btn-save pulse" id="saveBtn" type="button" onclick="publishToGitHub()">🚀 Publish to site</button>
+          <button class="btn" type="button" style="background:#64748b;color:#fff" onclick="downloadUpdatedReport()">⬇️ Download data.json</button>
+        </div>
+        <div id="githubConfig" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:8px;max-width:920px;margin:0 auto;width:100%;">
+          <label style="display:flex;flex-direction:column;gap:4px;font-size:.75rem;font-weight:700;color:var(--text-muted)">GitHub user
+            <input id="ghOwner" type="text" placeholder="username" style="padding:8px 10px;border-radius:8px;border:1px solid var(--border);font:inherit;font-weight:600;background:var(--card);color:var(--text)">
+          </label>
+          <label style="display:flex;flex-direction:column;gap:4px;font-size:.75rem;font-weight:700;color:var(--text-muted)">Repository
+            <input id="ghRepo" type="text" placeholder="medjool-report" style="padding:8px 10px;border-radius:8px;border:1px solid var(--border);font:inherit;font-weight:600;background:var(--card);color:var(--text)">
+          </label>
+          <label style="display:flex;flex-direction:column;gap:4px;font-size:.75rem;font-weight:700;color:var(--text-muted)">Branch
+            <input id="ghBranch" type="text" placeholder="main" value="main" style="padding:8px 10px;border-radius:8px;border:1px solid var(--border);font:inherit;font-weight:600;background:var(--card);color:var(--text)">
+          </label>
+          <label style="display:flex;flex-direction:column;gap:4px;font-size:.75rem;font-weight:700;color:var(--text-muted)">GitHub Token (PAT)
+            <input id="ghToken" type="password" placeholder="ghp_...." autocomplete="off" style="padding:8px 10px;border-radius:8px;border:1px solid var(--border);font:inherit;font-weight:600;background:var(--card);color:var(--text)">
+          </label>
+        </div>
+        <button type="button" class="btn" style="align-self:center;background:var(--card);color:var(--text);border:1px solid var(--border);box-shadow:none;padding:6px 12px;font-size:.78rem" onclick="saveGithubConfig()">💾 Save GitHub settings</button>
       </div>
-      <div class="admin-hint">Admin mode · Upload Excel → Publish <b>data.json</b> to your Vercel project (same folder as index.html). Public view: open the site without <code>?admin</code></div>
+      <div class="admin-hint">Admin · مرة واحدة: حط GitHub user + repo + Token ثم Save. بعد Upload Excel اضغط <b>Publish to site</b> — البيانات تترفع على GitHub وVercel يحدّث الموقع تلقائي. العرض العام بدون <code>?admin</code></div>
       <div id="statusBar" class="status-bar ok" style="display:none; margin-top: 10px; justify-content: center;"></div>
     </div>
 
@@ -2181,6 +2195,155 @@ function setDateFilter(isoOrNull) {
       }
 
       /** Publish data.json — upload this file next to index.html on Vercel to update the live site without changing HTML */
+      
+      const GH_CFG_KEY = 'medjool_github_cfg_v1';
+
+      function loadGithubConfig() {
+        try {
+          const raw = localStorage.getItem(GH_CFG_KEY);
+          if (!raw) return;
+          const c = JSON.parse(raw);
+          const o = document.getElementById('ghOwner');
+          const r = document.getElementById('ghRepo');
+          const b = document.getElementById('ghBranch');
+          const t = document.getElementById('ghToken');
+          if (o && c.owner) o.value = c.owner;
+          if (r && c.repo) r.value = c.repo;
+          if (b && c.branch) b.value = c.branch || 'main';
+          if (t && c.token) t.value = c.token;
+        } catch (e) { }
+      }
+
+      function saveGithubConfig() {
+        const cfg = {
+          owner: (document.getElementById('ghOwner') || {}).value || '',
+          repo: (document.getElementById('ghRepo') || {}).value || '',
+          branch: (document.getElementById('ghBranch') || {}).value || 'main',
+          token: (document.getElementById('ghToken') || {}).value || ''
+        };
+        try { localStorage.setItem(GH_CFG_KEY, JSON.stringify(cfg)); } catch (e) { }
+        const status = document.getElementById('statusBar');
+        if (status) {
+          status.style.display = 'flex';
+          status.className = 'status-bar ok';
+          status.innerHTML = '✅ GitHub settings saved in this browser only.';
+        }
+        return cfg;
+      }
+
+      function getGithubConfig() {
+        const o = (document.getElementById('ghOwner') || {}).value || '';
+        const r = (document.getElementById('ghRepo') || {}).value || '';
+        const b = (document.getElementById('ghBranch') || {}).value || 'main';
+        const t = (document.getElementById('ghToken') || {}).value || '';
+        if (o && r && t) return { owner: o.trim(), repo: r.trim(), branch: (b || 'main').trim(), token: t.trim() };
+        try {
+          const raw = localStorage.getItem(GH_CFG_KEY);
+          if (raw) return JSON.parse(raw);
+        } catch (e) { }
+        return { owner: o.trim(), repo: r.trim(), branch: (b || 'main').trim(), token: t.trim() };
+      }
+
+      function utf8ToBase64(str) {
+        const bytes = new TextEncoder().encode(str);
+        let binary = '';
+        bytes.forEach((b) => { binary += String.fromCharCode(b); });
+        return btoa(binary);
+      }
+
+      function setStatus(htmlMsg, ok) {
+        const status = document.getElementById('statusBar');
+        if (!status) return;
+        status.style.display = 'flex';
+        status.className = 'status-bar' + (ok === false ? '' : ' ok');
+        status.innerHTML = htmlMsg;
+      }
+
+      /** Push data.json to GitHub → Vercel auto-redeploys the live site */
+      async function publishToGitHub() {
+        const payload = FULL_DATA || DATA;
+        const di = document.getElementById('lastUpdateInput');
+        const iso = parseDisplayToIso(payload.lastUpdate) || (di && di.value) || window._manualDateIso;
+        if (iso) {
+          const disp = formatDisplayDate(iso);
+          payload.lastUpdate = disp;
+          if (DATA) DATA.lastUpdate = disp;
+          if (FULL_DATA) FULL_DATA.lastUpdate = disp;
+          if (di) di.value = iso;
+          window._manualDateIso = iso;
+        }
+        persistData();
+
+        const cfg = getGithubConfig();
+        if (!cfg.owner || !cfg.repo || !cfg.token) {
+          setStatus('⚠️ املأ GitHub user + Repository + Token ثم Save settings، بعدين Publish.', false);
+          return;
+        }
+        saveGithubConfig();
+
+        const path = 'data.json';
+        const apiBase = 'https://api.github.com/repos/' + encodeURIComponent(cfg.owner) + '/' + encodeURIComponent(cfg.repo) + '/contents/' + path;
+        const jsonText = JSON.stringify(payload, null, 2);
+        const contentB64 = utf8ToBase64(jsonText);
+        const sb = document.getElementById('saveBtn');
+        if (sb) { sb.disabled = true; sb.textContent = '⏳ Publishing...'; }
+
+        setStatus('⏳ جاري رفع data.json على GitHub...', true);
+
+        try {
+          // Get current file SHA (required to update)
+          let sha = null;
+          const getRes = await fetch(apiBase + '?ref=' + encodeURIComponent(cfg.branch || 'main'), {
+            headers: {
+              'Accept': 'application/vnd.github+json',
+              'Authorization': 'Bearer ' + cfg.token,
+              'X-GitHub-Api-Version': '2022-11-28'
+            }
+          });
+          if (getRes.status === 200) {
+            const cur = await getRes.json();
+            sha = cur.sha;
+          } else if (getRes.status !== 404) {
+            const err = await getRes.json().catch(() => ({}));
+            throw new Error(err.message || ('GitHub GET failed: ' + getRes.status));
+          }
+
+          const body = {
+            message: 'chore: update Medjool data.json — ' + (payload.lastUpdate || new Date().toISOString().slice(0, 10)),
+            content: contentB64,
+            branch: cfg.branch || 'main'
+          };
+          if (sha) body.sha = sha;
+
+          const putRes = await fetch(apiBase, {
+            method: 'PUT',
+            headers: {
+              'Accept': 'application/vnd.github+json',
+              'Authorization': 'Bearer ' + cfg.token,
+              'X-GitHub-Api-Version': '2022-11-28',
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(body)
+          });
+          const putJson = await putRes.json().catch(() => ({}));
+          if (!putRes.ok) {
+            throw new Error(putJson.message || ('GitHub PUT failed: ' + putRes.status));
+          }
+
+          if (sb) sb.classList.remove('pulse');
+          setStatus('✅ تم النشر على GitHub. Vercel هيحدّث الموقع خلال دقيقة تقريباً. التاريخ: <b>' + (payload.lastUpdate || '') + '</b>', true);
+        } catch (err) {
+          console.error(err);
+          setStatus('⚠️ فشل النشر: ' + (err && err.message ? err.message : err) + ' — تأكد من الـ Token (صلاحية repo) واسم الريبو.', false);
+        } finally {
+          if (sb) {
+            sb.disabled = false;
+            sb.textContent = '🚀 Publish to site';
+          }
+        }
+      }
+
+
       function downloadUpdatedReport() {
         const payload = FULL_DATA || DATA;
         const di = document.getElementById('lastUpdateInput');
@@ -2245,6 +2408,7 @@ function setDateFilter(isoOrNull) {
           FULL_DATA.finalGrades = BAKED_DATA.finalGrades;
         }
         applyModeUI();
+        loadGithubConfig();
         buildSectorButtons();
         buildGradesSectorButtons();
         renderAll();
