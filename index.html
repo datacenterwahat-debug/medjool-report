@@ -1543,7 +1543,7 @@ const BAKED_DATA = {"lastUpdate":"Sep 22, 2026","gradesLastUpdate":"Sep 22, 2026
           totalTarget: +totalTarget.toFixed(2) || 4065,
           station: +station.toFixed(2),
           inedible: +totalInedible.toFixed(2),
-          rawStock: Math.max(0, +(totalMedjool - grades.reduce((s, g) => s + (g.qty || 0), 0)).toFixed(2)),
+          rawStock: Math.max(0, +(totalMedjool - (function(){ const t = (typeof finalGrades !== 'undefined' && finalGrades && finalGrades.totals) ? Object.values(finalGrades.totals).reduce((s,v)=>s+(Number(v)||0),0) : grades.reduce((s,g)=>s+(g.qty||0),0); return t; })()).toFixed(2)),
           daily: { labels: dailyLabels, values: dailyValues },
           sectors: { labels: allSectors, actual: sectorActual, target: sectorTarget },
           inedibleBySector: { labels: inedibleSectors, values: inedibleValues },
@@ -1910,20 +1910,39 @@ function setDateFilter(isoOrNull) {
         document.getElementById('kpiRemaining').textContent = rem.toLocaleString(undefined, { maximumFractionDigits: 0 });
         document.getElementById('kpiRemainingPct').textContent = remPct.toFixed(2) + '%';
         document.getElementById('progressBar').style.width = Math.min(pct, 100) + '%';
-        // Sorted = total of all grades; % of Total Harvest Actual
+        // Sorted = Final grades total (same source as Grades page); fallback to grades sheet
         const baseForRaw = FULL_DATA || DATA;
-        const gradesSum = (baseForRaw.grades || []).reduce((s, g) => s + (Number(g.qty) || 0), 0);
-        const harvestAct = Number(baseForRaw.totalActual || DATA.totalActual || 0);
+        let gradesSum = 0;
+        const fg = baseForRaw.finalGrades;
+        if (fg && fg.totals && typeof fg.totals === 'object' && Object.keys(fg.totals).length) {
+          gradesSum = Object.values(fg.totals).reduce((s, v) => s + (Number(v) || 0), 0);
+        } else if (Array.isArray(baseForRaw.grades) && baseForRaw.grades.length) {
+          gradesSum = baseForRaw.grades.reduce((s, g) => s + (Number(g.qty) || 0), 0);
+        }
+        gradesSum = +Number(gradesSum).toFixed(2);
+        // Harvest: respect active sector filter when set
+        let harvestAct = Number(baseForRaw.totalActual || DATA.totalActual || 0);
+        if (typeof activeSector !== 'undefined' && activeSector && activeSector !== 'ALL') {
+          const labs = (baseForRaw.sectors && baseForRaw.sectors.labels) || [];
+          const acts = (baseForRaw.sectors && baseForRaw.sectors.actual) || [];
+          const ix = labs.indexOf(activeSector);
+          if (ix >= 0) harvestAct = Number(acts[ix]) || 0;
+          // sector sorted from finalGrades.bySector
+          if (fg && fg.bySector && fg.bySector[activeSector]) {
+            gradesSum = +Object.values(fg.bySector[activeSector]).reduce((s, v) => s + (Number(v) || 0), 0).toFixed(2);
+          }
+        }
         const sortedPct = harvestAct > 0 ? (gradesSum / harvestAct * 100) : 0;
         const kpiSortedEl = document.getElementById('kpiSorted');
         if (kpiSortedEl) kpiSortedEl.textContent = gradesSum.toFixed(2);
         const kpiSortedPctEl = document.getElementById('kpiSortedPct');
         if (kpiSortedPctEl) kpiSortedPctEl.textContent = sortedPct.toFixed(1) + '%';
-        // Raw Stock = Total Harvest Actual − Total Grades (remaining inventory)
+        // Raw Stock = Harvest − Sorted
         const rawStock = Math.max(0, +(harvestAct - gradesSum).toFixed(2));
         DATA.rawStock = rawStock;
         if (FULL_DATA) FULL_DATA.rawStock = rawStock;
-        document.getElementById('kpiRaw').textContent = rawStock.toFixed(2);
+        const kpiRawEl = document.getElementById('kpiRaw');
+        if (kpiRawEl) kpiRawEl.textContent = rawStock.toFixed(2);
         const rawPct = harvestAct > 0 ? (rawStock / harvestAct * 100) : 0;
         const kpiRawPctEl = document.getElementById('kpiRawPct');
         if (kpiRawPctEl) kpiRawPctEl.textContent = rawPct.toFixed(1) + '%';
