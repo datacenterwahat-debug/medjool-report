@@ -1,11 +1,11 @@
 {
-  "lastUpdate": "Oct 21, 2026",
+  "lastUpdate": "Oct 22, 2026",
   "gradesLastUpdate": "Oct 13, 2026",
-  "totalActual": 2893.84,
+  "totalActual": 3006.09,
   "totalTarget": 4065.02,
   "station": 1157.41,
   "inedible": 0,
-  "rawStock": 446.69,
+  "rawStock": 459.33,
   "daily": {
     "labels": [
       "28/8",
@@ -62,7 +62,8 @@
       "18/10",
       "19/10",
       "20/10",
-      "21/10"
+      "21/10",
+      "22/10"
     ],
     "values": [
       2.86,
@@ -119,7 +120,8 @@
       103.2,
       106.94,
       104.14,
-      108.75
+      108.75,
+      112.25
     ]
   },
   "sectors": {
@@ -143,15 +145,15 @@
     "actual": [
       294.84,
       97.53,
-      329.68,
+      361.23,
       153.95,
       171.79,
       125.22,
       316.32,
       241.41,
       129.63,
-      215.25,
-      400.43,
+      248.46,
+      447.93,
       299.38,
       46.14,
       32.57,
@@ -269,7 +271,7 @@
       }
     },
     "M30": {
-      "actual": 329.68,
+      "actual": 361.23,
       "target": 393.15,
       "inedible": 0,
       "daily": {
@@ -295,7 +297,8 @@
           "7",
           "19",
           "20",
-          "21"
+          "21",
+          "22"
         ],
         "values": [
           0.35,
@@ -319,7 +322,8 @@
           15.97,
           13.89,
           23.96,
-          31.63
+          31.63,
+          31.55
         ]
       }
     },
@@ -550,7 +554,7 @@
       }
     },
     "M29": {
-      "actual": 215.25,
+      "actual": 248.46,
       "target": 253.85,
       "inedible": 0,
       "daily": {
@@ -574,7 +578,8 @@
           "18",
           "19",
           "20",
-          "21"
+          "21",
+          "22"
         ],
         "values": [
           0.66,
@@ -596,12 +601,13 @@
           20.01,
           23.28,
           12.7,
-          14.47
+          14.47,
+          33.2
         ]
       }
     },
     "M03": {
-      "actual": 400.43,
+      "actual": 447.93,
       "target": 720.12,
       "inedible": 0,
       "daily": {
@@ -623,7 +629,8 @@
           "18",
           "19",
           "20",
-          "21"
+          "21",
+          "22"
         ],
         "values": [
           0.16,
@@ -643,7 +650,8 @@
           43.12,
           47.18,
           44.32,
-          44.15
+          44.15,
+          47.49
         ]
       }
     },
@@ -813,28 +821,28 @@
       "M01": {
         "Grade 1": 60.8136,
         "Grade 2": 33.0455,
-        "Grade 3": 27.2692,
-        "Grade 4": 91.928,
+        "Grade 3": 27.8795,
+        "Grade 4": 92.5436,
         "Golden Crown": 2.1528,
         "Rutab": 8.9725,
-        "Dry": 0.9361,
+        "Dry": 1.3714,
         "Under Processing": 0,
         "Compost Waste": 0.5026,
         "Production Waste": 4.7484,
         "Hashaf": 0.2452
       },
       "M03": {
-        "Grade 1": 47.0124,
-        "Grade 2": 20.8441,
-        "Grade 3": 24.6265,
-        "Grade 4": 99.5201,
-        "Golden Crown": 0.8133,
-        "Rutab": 15.3768,
+        "Grade 1": 50.2018,
+        "Grade 2": 22.7789,
+        "Grade 3": 26.9447,
+        "Grade 4": 113.5548,
+        "Golden Crown": 0.9604,
+        "Rutab": 16.2911,
         "Dry": 2.0304,
         "Under Processing": 0.2643,
         "Compost Waste": 1.3905,
-        "Production Waste": 4.3911,
-        "Hashaf": 3.8113
+        "Production Waste": 6.2303,
+        "Hashaf": 4.2869
       },
       "M06": {
         "Grade 1": 58.5454,
@@ -902,7 +910,7 @@
         "Hashaf": 0.7058
       },
       "M26": {
-        "Grade 1": 87.7572,
+        "Grade 1": 88.3518,
         "Grade 2": 32.9364,
         "Grade 3": 37.8962,
         "Grade 4": 94.2839,
@@ -921,7 +929,7 @@
         "Grade 4": 103.6446,
         "Golden Crown": 5.7159,
         "Rutab": 10.1853,
-        "Dry": 6.989,
+        "Dry": 7.4555,
         "Under Processing": 0.2427,
         "Compost Waste": 1.705,
         "Production Waste": 3.6504,
@@ -941,16 +949,16 @@
         "Hashaf": 2.5774
       },
       "M29": {
-        "Grade 1": 41.326,
-        "Grade 2": 16.9425,
-        "Grade 3": 16.1036,
-        "Grade 4": 35.4977,
-        "Golden Crown": 2.8423,
-        "Rutab": 5.8389,
-        "Dry": 2.7686,
+        "Grade 1": 62.3713,
+        "Grade 2": 26.1298,
+        "Grade 3": 26.6421,
+        "Grade 4": 60.4544,
+        "Golden Crown": 3.4171,
+        "Rutab": 7.619,
+        "Dry": 4.1384,
         "Under Processing": 0,
         "Compost Waste": 0.7565,
-        "Production Waste": 3.6936,
+        "Production Waste": 4.7008,
         "Hashaf": 0.8869
       },
       "M30": {
@@ -983,7 +991,7 @@
         "Grade 1": 21.96,
         "Grade 2": 10.6551,
         "Grade 3": 14.2803,
-        "Grade 4": 67.8864,
+        "Grade 4": 68.468,
         "Golden Crown": 0.6642,
         "Rutab": 4.6152,
         "Dry": 1.843,
@@ -994,9 +1002,9 @@
       },
       "M33": {
         "Grade 1": 46.2287,
-        "Grade 2": 11.5904,
+        "Grade 2": 12.1531,
         "Grade 3": 13.3111,
-        "Grade 4": 26.1173,
+        "Grade 4": 26.5465,
         "Golden Crown": 3.0679,
         "Rutab": 3.2618,
         "Dry": 1.4902,
@@ -1007,17 +1015,17 @@
       }
     },
     "totals": {
-      "Grade 1": 682.6074,
-      "Grade 2": 278.7108,
-      "Grade 3": 300.4741,
-      "Grade 4": 936.8629,
-      "Golden Crown": 38.0758,
-      "Rutab": 106.0419,
-      "Dry": 29.6132,
+      "Grade 1": 707.4367,
+      "Grade 2": 290.3956,
+      "Grade 3": 313.9411,
+      "Grade 4": 977.4807,
+      "Golden Crown": 38.7977,
+      "Rutab": 108.7363,
+      "Dry": 31.8848,
       "Under Processing": 4.1953,
       "Compost Waste": 10.7714,
-      "Production Waste": 42.8856,
-      "Hashaf": 16.9136
+      "Production Waste": 45.732,
+      "Hashaf": 17.3892
     },
     "order": [
       "Grade 1",
@@ -1643,6 +1651,16 @@
         "M25": 0.97,
         "M29": 14.47,
         "M30": 31.63
+      },
+      "inedibleBySector": {}
+    },
+    "2026-10-22": {
+      "medjool": 112.25,
+      "inedible": 0,
+      "bySector": {
+        "M03": 47.49,
+        "M29": 33.2,
+        "M30": 31.55
       },
       "inedibleBySector": {}
     }
