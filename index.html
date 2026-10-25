@@ -1202,16 +1202,29 @@ const BAKED_DATA = {"lastUpdate":"Oct 24, 2026","gradesLastUpdate":"Oct 24, 2026
         const reader = new FileReader();
         reader.onload = evt => {
           try {
-            const wb = XLSX.read(new Uint8Array(evt.target.result), { type: 'array', cellDates: true });
+            const wb = XLSX.read(new Uint8Array(evt.target.result), { type: 'array', cellDates: false, raw: false });
             parseWorkbook(wb); persistData();
-            // Auto date = latest date from الفعلي (raw) — applied site-wide
+            // Auto date = latest date from شيت الفعلي (ISO from maxActualDate)
             try {
-              const iso = parseDisplayToIso((FULL_DATA || DATA).lastUpdate);
+              const base = FULL_DATA || DATA;
+              let iso = null;
+              if (base.dateIndex && typeof base.dateIndex === 'object') {
+                const keys = Object.keys(base.dateIndex).sort();
+                if (keys.length) iso = keys[keys.length - 1];
+              }
+              if (!iso) iso = parseDisplayToIso(base.lastUpdate);
               const di = document.getElementById('lastUpdateInput');
-              if (iso && di) { di.value = iso; window._manualDateIso = iso; }
+              if (iso) {
+                window._manualDateIso = iso;
+                if (di) di.value = iso;
+                const disp = formatDisplayDate(iso);
+                if (DATA) DATA.lastUpdate = disp;
+                if (FULL_DATA) FULL_DATA.lastUpdate = disp;
+              }
               buildGradesSectorButtons();
               renderGradesPage();
-            } catch (e) {} // FULL_DATA set inside parseWorkbook
+              renderAll();
+            } catch (e) { console.error(e); }
             document.getElementById('saveBtn').classList.add('pulse');
             status.className = 'status-bar ok';
             status.innerHTML = '✅ Data updated from Excel (date auto-set to latest in الفعلي). Click <b>🚀 Publish to site</b> to deploy to Vercel.';
@@ -1232,6 +1245,7 @@ const BAKED_DATA = {"lastUpdate":"Oct 24, 2026","gradesLastUpdate":"Oct 24, 2026
 
       function toDateStr(dv) {
         if (dv === null || dv === undefined || dv === '') return '';
+        // Excel serial number → calendar date (no TZ)
         if (typeof dv === 'number' && isFinite(dv)) {
           try {
             const d = XLSX.SSF.parse_date_code(dv);
@@ -1239,24 +1253,32 @@ const BAKED_DATA = {"lastUpdate":"Oct 24, 2026","gradesLastUpdate":"Oct 24, 2026
           } catch (e) { }
         }
         if (dv instanceof Date && !isNaN(dv.getTime())) {
-          // Use UTC parts — SheetJS cellDates gives UTC midnight; avoid local TZ / +1 day shift
-          const y = dv.getUTCFullYear();
-          const m = String(dv.getUTCMonth() + 1).padStart(2, '0');
-          const day = String(dv.getUTCDate()).padStart(2, '0');
-          return y + '-' + m + '-' + day;
+          // SheetJS cellDates: usually UTC midnight of the Excel day.
+          // If time is UTC midnight use UTC calendar; if local midnight use local calendar.
+          // Never apply +/- 1 day hacks.
+          const utcMid = dv.getUTCHours() === 0 && dv.getUTCMinutes() === 0 && dv.getUTCSeconds() === 0;
+          const localMid = dv.getHours() === 0 && dv.getMinutes() === 0 && dv.getSeconds() === 0;
+          if (utcMid && !localMid) {
+            return dv.getUTCFullYear() + '-' + String(dv.getUTCMonth() + 1).padStart(2, '0') + '-' + String(dv.getUTCDate()).padStart(2, '0');
+          }
+          return dv.getFullYear() + '-' + String(dv.getMonth() + 1).padStart(2, '0') + '-' + String(dv.getDate()).padStart(2, '0');
         }
         if (typeof dv === 'string') {
           const s = dv.trim();
           if (/^\d{4}-\d{2}-\d{2}/.test(s)) return s.slice(0, 10);
+          // D/M/YYYY or M/D/YYYY — prefer D/M (Arabic Excel)
           const m1 = s.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})/);
           if (m1) return m1[3] + '-' + m1[2].padStart(2, '0') + '-' + m1[1].padStart(2, '0');
-          const t = Date.parse(s);
-          if (!isNaN(t)) {
-            const dd = new Date(t);
-            return dd.getUTCFullYear() + '-' + String(dd.getUTCMonth() + 1).padStart(2, '0') + '-' + String(dd.getUTCDate()).padStart(2, '0');
-          }
         }
         return '';
+      }
+
+      /** Format tons with thousands comma: 3271.57 → 3,271.57 */
+      function fmtTon(n, dec) {
+        const d = (dec === undefined || dec === null) ? 2 : dec;
+        const x = Number(n);
+        if (!isFinite(x)) return '0.00';
+        return x.toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: d });
       }
 
       function formatDisplayDate(iso) {
@@ -1705,17 +1727,17 @@ const BAKED_DATA = {"lastUpdate":"Oct 24, 2026","gradesLastUpdate":"Oct 24, 2026
         const pctEl = document.getElementById('gradesKpiSortedPct');
         const diffEl = document.getElementById('gradesKpiDiff');
         const diffPctEl = document.getElementById('gradesKpiDiffPct');
-        if (harEl) harEl.textContent = harvest.toFixed(2);
-        if (sortEl) sortEl.textContent = sortedQty.toFixed(2);
+        if (harEl) harEl.textContent = fmtTon(harvest);
+        if (sortEl) sortEl.textContent = fmtTon(sortedQty);
         if (pctEl) pctEl.textContent = sortedPct.toFixed(1) + '%';
-        if (diffEl) diffEl.textContent = diff.toFixed(2);
+        if (diffEl) diffEl.textContent = fmtTon(diff);
         if (diffPctEl) diffPctEl.textContent = diffPct.toFixed(1) + '%';
 
         const totalG = glist.reduce((s, g) => s + (Number(g.qty) || 0), 0) || sortedQty;
         gGrid.innerHTML = glist.map(g => {
           const displayName = gradeDisplayName(g.name);
           const pct = totalG > 0 ? ((g.qty / totalG) * 100) : 0;
-          return '<div class="grade-card"><div class="grade-icon">' + gradeIcon(g.name) + '</div><div class="grade-name">' + displayName + '</div><div class="grade-qty">' + Number(g.qty).toFixed(2) + '</div><div class="grade-unit">Ton</div><div style="font-size:.78rem;font-weight:700;color:var(--primary);margin-top:2px;font-size:.72rem">' + pct.toFixed(1) + '%</div></div>';
+          return '<div class="grade-card"><div class="grade-icon">' + gradeIcon(g.name) + '</div><div class="grade-name">' + displayName + '</div><div class="grade-qty">' + fmtTon(g.qty) + '</div><div class="grade-unit">Ton</div><div style="font-size:.78rem;font-weight:700;color:var(--primary);margin-top:2px;font-size:.72rem">' + pct.toFixed(1) + '%</div></div>';
         }).join('');
 
         const gqEl = document.getElementById('gradesTotalQty');
@@ -1898,7 +1920,7 @@ function setDateFilter(isoOrNull) {
             + '<div style="width:100%;font-size:.78rem;font-weight:700;color:var(--text-muted);padding-left:37px;letter-spacing:.02em">All Quantity By (Ton)</div>';
         }
 
-        document.getElementById('kpiActual').textContent = DATA.totalActual.toFixed(2);
+        document.getElementById('kpiActual').textContent = fmtTon(DATA.totalActual);
         // Actual % always vs Target (expected):
         // - no filter → total actual / total target
         // - sector filter → sector actual / sector target  (DATA already scoped in applyFilters)
@@ -1931,7 +1953,7 @@ function setDateFilter(isoOrNull) {
         }
         const sortedPct = harvestAct > 0 ? (gradesSum / harvestAct * 100) : 0;
         const kpiSortedEl = document.getElementById('kpiSorted');
-        if (kpiSortedEl) kpiSortedEl.textContent = gradesSum.toFixed(2);
+        if (kpiSortedEl) kpiSortedEl.textContent = fmtTon(gradesSum);
         const kpiSortedPctEl = document.getElementById('kpiSortedPct');
         if (kpiSortedPctEl) kpiSortedPctEl.textContent = sortedPct.toFixed(1) + '%';
         // Raw Stock = Harvest − Sorted
@@ -1939,7 +1961,7 @@ function setDateFilter(isoOrNull) {
         DATA.rawStock = rawStock;
         if (FULL_DATA) FULL_DATA.rawStock = rawStock;
         const kpiRawEl = document.getElementById('kpiRaw');
-        if (kpiRawEl) kpiRawEl.textContent = rawStock.toFixed(2);
+        if (kpiRawEl) kpiRawEl.textContent = fmtTon(rawStock);
         const rawPct = harvestAct > 0 ? (rawStock / harvestAct * 100) : 0;
         const kpiRawPctEl = document.getElementById('kpiRawPct');
         if (kpiRawPctEl) kpiRawPctEl.textContent = rawPct.toFixed(1) + '%';
