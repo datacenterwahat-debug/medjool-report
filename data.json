@@ -1,11 +1,11 @@
 {
-  "lastUpdate": "Nov 24, 2026",
+  "lastUpdate": "Nov 25, 2026",
   "gradesLastUpdate": "Oct 13, 2026",
-  "totalActual": 5106.46,
+  "totalActual": 5110.95,
   "totalTarget": 4065.02,
   "station": 1157.41,
   "inedible": 0,
-  "rawStock": 148.51,
+  "rawStock": 127.85,
   "daily": {
     "labels": [
       "28/8",
@@ -96,7 +96,8 @@
       "21/11",
       "22/11",
       "23/11",
-      "24/11"
+      "24/11",
+      "25/11"
     ],
     "values": [
       2.86,
@@ -187,7 +188,8 @@
       16.57,
       12.12,
       11.59,
-      8.73
+      8.73,
+      4.49
     ]
   },
   "sectors": {
@@ -219,7 +221,7 @@
       548.62,
       462.69,
       310.55,
-      787.57,
+      792.06,
       324.53,
       66.48,
       58.75,
@@ -813,7 +815,7 @@
       }
     },
     "M03": {
-      "actual": 787.57,
+      "actual": 792.06,
       "target": 720.12,
       "inedible": 0,
       "daily": {
@@ -848,7 +850,8 @@
           "21",
           "22",
           "23",
-          "24"
+          "24",
+          "25"
         ],
         "values": [
           0.16,
@@ -881,7 +884,8 @@
           16.57,
           11.93,
           9.58,
-          8.73
+          8.73,
+          4.49
         ]
       }
     },
@@ -1098,20 +1102,20 @@
         "Dry": 6.658,
         "Under Processing": 6.9576,
         "Compost Waste": 7.2756,
-        "Production Waste": 22.3232,
-        "Hashaf": 0.7492
+        "Production Waste": 25.4942,
+        "Hashaf": 0.9546
       },
       "M03": {
         "Grade 1": 115.3108,
         "Grade 2": 81.0902,
         "Grade 3": 78.0299,
-        "Grade 4": 369.7407,
+        "Grade 4": 370.2983,
         "Golden Crown": 2.7701,
         "Rutab": 35.1273,
         "Dry": 7.9224,
         "Under Processing": 0.7419,
         "Compost Waste": 10.4456,
-        "Production Waste": 16.7975,
+        "Production Waste": 19.4267,
         "Hashaf": 6.1359
       },
       "M06": {
@@ -1129,16 +1133,16 @@
       },
       "M21": {
         "Grade 1": 43.3246,
-        "Grade 2": 28.2028,
+        "Grade 2": 28.3932,
         "Grade 3": 14.8034,
         "Grade 4": 98.9143,
         "Golden Crown": 0.2443,
         "Rutab": 6.2167,
         "Dry": 1.2235,
-        "Under Processing": 2.0211,
+        "Under Processing": 2.2251,
         "Compost Waste": 1.6728,
-        "Production Waste": 0.6426,
-        "Hashaf": 0.6836
+        "Production Waste": 1.8356,
+        "Hashaf": 0.9178
       },
       "M22": {
         "Grade 1": 49.4017,
@@ -1150,8 +1154,8 @@
         "Dry": 2.0657,
         "Under Processing": 1.7351,
         "Compost Waste": 2.8636,
-        "Production Waste": 9.7102,
-        "Hashaf": 0.2035
+        "Production Waste": 12.5368,
+        "Hashaf": 0.4263
       },
       "M24": {
         "Grade 1": 15.929,
@@ -1176,7 +1180,7 @@
         "Dry": 4.954,
         "Under Processing": 0,
         "Compost Waste": 3.2655,
-        "Production Waste": 2.9772,
+        "Production Waste": 3.5618,
         "Hashaf": 1.866
       },
       "M26": {
@@ -1215,8 +1219,8 @@
         "Dry": 6.9955,
         "Under Processing": 1.648,
         "Compost Waste": 5.9631,
-        "Production Waste": 8.3782,
-        "Hashaf": 3.6992
+        "Production Waste": 11.8208,
+        "Hashaf": 3.8072
       },
       "M29": {
         "Grade 1": 89.663,
@@ -1228,7 +1232,7 @@
         "Dry": 6.3417,
         "Under Processing": 0.5221,
         "Compost Waste": 3.4839,
-        "Production Waste": 5.244,
+        "Production Waste": 7.3136,
         "Hashaf": 0.8869
       },
       "M30": {
@@ -1267,8 +1271,8 @@
         "Dry": 6.5051,
         "Under Processing": 3.1492,
         "Compost Waste": 2.2108,
-        "Production Waste": 9.5662,
-        "Hashaf": 1.8401
+        "Production Waste": 15.1252,
+        "Hashaf": 2.7117
       },
       "M33": {
         "Grade 1": 64.8376,
@@ -1280,22 +1284,22 @@
         "Dry": 2.1871,
         "Under Processing": 0,
         "Compost Waste": 1.464,
-        "Production Waste": 3.4104,
-        "Hashaf": 0.8644
+        "Production Waste": 4.1848,
+        "Hashaf": 1.1712
       }
     },
     "totals": {
       "Grade 1": 1257.2423,
-      "Grade 2": 592.611,
+      "Grade 2": 592.8014,
       "Grade 3": 543.6715,
-      "Grade 4": 2057.7404,
+      "Grade 4": 2058.298,
       "Golden Crown": 47.6273,
       "Rutab": 195.1419,
       "Dry": 68.698,
-      "Under Processing": 20.1156,
+      "Under Processing": 20.3196,
       "Compost Waste": 57.6255,
-      "Production Waste": 92.7082,
-      "Hashaf": 24.7662
+      "Production Waste": 114.9582,
+      "Hashaf": 26.715
     },
     "order": [
       "Grade 1",
@@ -2264,6 +2268,14 @@
       "inedible": 0,
       "bySector": {
         "M03": 8.73
+      },
+      "inedibleBySector": {}
+    },
+    "2026-11-25": {
+      "medjool": 4.49,
+      "inedible": 0,
+      "bySector": {
+        "M03": 4.49
       },
       "inedibleBySector": {}
     }
